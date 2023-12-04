@@ -1,0 +1,5 @@
+check all CromeOptios list
+=========================================
+like how to open incognito mode, block pop-ups etc....
+
+https://chromedriver.chromium.org/capabilities 
