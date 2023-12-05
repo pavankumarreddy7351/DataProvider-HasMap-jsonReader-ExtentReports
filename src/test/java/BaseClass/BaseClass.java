@@ -10,18 +10,23 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+
+import com.aventstack.extentreports.ExtentReports;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.qameta.allure.internal.shadowed.jackson.core.type.TypeReference;
@@ -33,8 +38,9 @@ public class BaseClass {
 	public static WebDriverWait wait;
 	public static ChromeOptions options;
 	public static Properties prop;
+	public static ExtentReports extent;
 
-	@BeforeTest
+	@BeforeMethod
 	public void launchApplication() throws IOException {
 		prop = new Properties();
 		File proFile = new File(
@@ -59,9 +65,7 @@ public class BaseClass {
 	public List<HashMap<String, String>> getJsonDataToMap(String path) throws IOException {
 
 		// read json data to string
-		String jsonConnect = FileUtils.readFileToString(
-				new File(path),
-				StandardCharsets.UTF_8);
+		String jsonConnect = FileUtils.readFileToString(new File(path), StandardCharsets.UTF_8);
 
 		// String to HashMap jackson databind
 
@@ -72,7 +76,16 @@ public class BaseClass {
 		return data;
 	}
 
-	@AfterTest
+	public String getScreenShot(String testCaseName) throws IOException {
+		TakesScreenshot ts = (TakesScreenshot) driver;
+		File source = ts.getScreenshotAs(OutputType.FILE);
+		File file = new File(System.getProperty("user.dir") + "//reports//" + testCaseName + ".png");
+		FileUtils.copyFile(source, file);
+		return System.getProperty("user.dir") + "//reports//" + testCaseName + ".png";
+
+	}
+
+	@AfterMethod
 	public void closeApplication() {
 		driver.quit();
 	}
